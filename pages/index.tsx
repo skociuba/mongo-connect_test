@@ -1,39 +1,48 @@
-import Head from "next/head";
-import clientPromise from "../lib/mongodb";
-import type { InferGetServerSidePropsType, GetServerSideProps } from "next";
+import { useState, useEffect } from "react"
+import Head from "next/head"
+import clientPromise from "../lib/mongodb"
+import type { InferGetServerSidePropsType, GetServerSideProps } from "next"
 
 type ConnectionStatus = {
-  isConnected: boolean;
-};
+  isConnected: boolean,
+}
+
+interface Restaurant {
+  _key: string;
+  name: string;
+  cuisine: string;
+}
 
 export const getServerSideProps: GetServerSideProps<
   ConnectionStatus
 > = async () => {
   try {
-    await clientPromise;
-    // `await clientPromise` will use the default database passed in the MONGODB_URI
-    // However you can use another database (e.g. myDatabase) by replacing the `await clientPromise` with the following code:
-    //
-    // `const client = await clientPromise`
-    // `const db = client.db("myDatabase")`
-    //
-    // Then you can execute queries against your database like so:
-    // db.find({}) or any of the MongoDB Node Driver commands
+    await clientPromise
 
     return {
       props: { isConnected: true },
-    };
+    }
   } catch (e) {
-    console.error(e);
+    console.error(e)
     return {
       props: { isConnected: false },
-    };
+    }
   }
-};
+}
 
 export default function Home({
   isConnected,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
+  const [restaurants, setRestaurant] = useState<Restaurant[]>([])
+
+  useEffect(() => {
+    ;(async () => {
+      const response = await fetch("/api/list")
+      const resultJson = await response.json()
+      setRestaurant(resultJson)
+    })()
+  }, [])
+
   return (
     <div className="container">
       <Head>
@@ -46,6 +55,12 @@ export default function Home({
           Welcome to <a href="https://nextjs.org">Next.js with MongoDB!</a>
         </h1>
 
+        {restaurants.map((restaurant) => (
+          <div key={restaurant._key}>
+            <h2>{restaurant.name}</h2>
+            <p>{restaurant.cuisine}</p>
+          </div>
+        ))}
         {isConnected ? (
           <h2 className="subtitle">You are connected to MongoDB</h2>
         ) : (
@@ -59,37 +74,7 @@ export default function Home({
           Get started by editing <code>pages/index.js</code>
         </p>
 
-        <div className="grid">
-          <a href="https://nextjs.org/docs" className="card">
-            <h3>Documentation &rarr;</h3>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
-
-          <a href="https://nextjs.org/learn" className="card">
-            <h3>Learn &rarr;</h3>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-
-          <a
-            href="https://github.com/vercel/next.js/tree/canary/examples"
-            className="card"
-          >
-            <h3>Examples &rarr;</h3>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="card"
-          >
-            <h3>Deploy &rarr;</h3>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
-        </div>
+     
       </main>
 
       <footer>
@@ -253,5 +238,5 @@ export default function Home({
         }
       `}</style>
     </div>
-  );
+  )
 }
