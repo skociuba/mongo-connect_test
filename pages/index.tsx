@@ -72,32 +72,27 @@ export default function Home({
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <form>
-        <label>
-          name:
-          <input
-            onChange={(e) => onChange(e)}
-            value={form.name}
-            type="text"
-            name="name"
-          />
-        </label>
-        <label>
-          cuisine:
-          <input
-            onChange={(e) => onChange(e)}
-            value={form.cuisine}
-            type="text"
-            name="cuisine"
-          />
-        </label>
-      </form>
-
       <main>
-        <h1 className="title">
-          Welcome to <a href="https://nextjs.org">Next.js with MongoDB!</a>
-        </h1>
-
+        <form>
+          <label>
+            name:
+            <input
+              onChange={(e) => onChange(e)}
+              value={form.name}
+              type="text"
+              name="name"
+            />
+          </label>
+          <label>
+            cuisine:
+            <input
+              onChange={(e) => onChange(e)}
+              value={form.cuisine}
+              type="text"
+              name="cuisine"
+            />
+          </label>
+        </form>
         <button
           onClick={() =>
             addRestaurant({
