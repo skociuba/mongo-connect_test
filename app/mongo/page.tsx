@@ -7,7 +7,7 @@ interface Restaurant {
   cuisine: string;
 }
 
-const Page: React.FC = () => {
+const Page = () => {
   const [restaurants, setRestaurant] = useState<Restaurant[]>([]);
   const [form, setForm] = useState({name: '', cuisine: ''});
 
