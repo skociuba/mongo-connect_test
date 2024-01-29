@@ -1,4 +1,4 @@
-const Home: React.FC = () => (
+const Home = () => (
   <>
     <div className="flex w-full items-center justify-center overflow-hidden">
       MainPage
