@@ -25,7 +25,7 @@ export async function GET() {
   }
 }
 
-export async function POST(request) {
+export async function POST(request: Request) {
   const {mongoClient} = await connectToDatabase();
   const db = mongoClient.db('blog');
   const collection = db.collection('blog');
