@@ -30,8 +30,7 @@ export async function POST(request) {
   const db = mongoClient.db('blog');
   const collection = db.collection('blog');
 
-  const newContact = await request.data;
-  console.log(collection);
+  const newContact = await request.json();
 
   try {
     const result = await collection.insertOne(newContact);
