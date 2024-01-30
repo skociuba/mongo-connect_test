@@ -19,8 +19,23 @@ export const PostsApi = createApi({
         body: obj,
       }),
     }),
+    deletePost: builder.mutation({
+      query: (_id) => ({
+        url: '/mongo/api',
+        method: 'DELETE',
+        body: {_id},
+      }),
+    }),
+
+    updatePost: builder.mutation({
+      query: (updatedPost) => ({
+        url: '/mongo/api',
+        method: 'PUT',
+        body: updatedPost,
+      }),
+    }),
   }),
 });
 
-export const {useAddPostMutation, useGetPostsQuery, useEditCartMutation} =
+export const {useAddPostMutation, useGetPostsQuery, useDeletePostMutation} =
   PostsApi;

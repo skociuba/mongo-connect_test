@@ -5,19 +5,22 @@ import {useState} from 'react';
 import {
   useGetPostsQuery,
   useAddPostMutation,
+  useDeletePostMutation,
 } from '../provider/redux/query/Posts';
 
 interface Props {
   _key: string;
   name: string;
   cuisine: string;
+  _id: string;
 }
 
 const Home = () => {
   const [form, setForm] = useState({name: '', cuisine: '', _key: 'newKey'});
 
-  const {data, isError, isLoading} = useGetPostsQuery({});
+  const {data, isError, isLoading, refetch} = useGetPostsQuery({});
   const [addPost] = useAddPostMutation();
+  const [deletePost] = useDeletePostMutation();
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({...form, [e.target.name]: e.target.value});
@@ -26,6 +29,8 @@ const Home = () => {
     e.preventDefault();
     try {
       const response = await addPost(form);
+      setForm({name: '', cuisine: '', _key: 'newKey'});
+      refetch();
       return response;
     } catch (error: unknown) {
       console.log(error);
@@ -69,13 +74,26 @@ const Home = () => {
           </form>
           {data?.data?.map((restaurant: Props) => (
             <div
-              key={restaurant._key}
+              key={restaurant._id}
               className="mt-4 flex flex-col items-start rounded bg-gray-100 p-4 shadow-lg">
               <div className="m-10 flex flex-col">
                 <h2 className="mb-2 text-xl font-bold text-red-700">
                   Topic: {restaurant.name}
                 </h2>
                 <p className="text-gray-600">Content: {restaurant.cuisine}</p>
+                <button
+                  onClick={async () => {
+                    try {
+                      const response = await deletePost(restaurant._id);
+                      refetch();
+                      return response;
+                    } catch (error: unknown) {
+                      console.log(error);
+                    }
+                  }}
+                  className="mt-4 w-32 rounded-md border border-transparent bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
+                  Delete Post
+                </button>
               </div>
             </div>
           ))}
