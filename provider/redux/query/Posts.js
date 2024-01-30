@@ -12,26 +12,15 @@ export const PostsApi = createApi({
         method: 'GET',
       }),
     }),
-    addToCart: builder.mutation({
+    addPost: builder.mutation({
       query: (obj) => ({
-        url: '/add-cart',
+        url: '/mongo/api',
         method: 'POST',
-        body: {id: obj},
-      }),
-    }),
-
-    editCart: builder.mutation({
-      query: (obj) => ({
-        url: '/edit-cart',
-        method: 'POST',
-        body: {
-          id: obj.id,
-          action: obj.action,
-        },
+        body: obj,
       }),
     }),
   }),
 });
 
-export const {useAddToCartMutation, useGetPostsQuery, useEditCartMutation} =
+export const {useAddPostMutation, useGetPostsQuery, useEditCartMutation} =
   PostsApi;
