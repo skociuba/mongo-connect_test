@@ -1,5 +1,5 @@
 'use client';
-
+import Modal from 'react-modal';
 import {useState} from 'react';
 
 import {
@@ -19,13 +19,15 @@ interface Props {
 const Home = () => {
   const [form, setForm] = useState({name: '', cuisine: '', _key: 'newKey'});
   const [editingPost, setEditingPost] = useState<Props | null>(null);
-
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const {data, isError, isLoading, refetch} = useGetPostsQuery({});
   const [addPost] = useAddPostMutation();
   const [deletePost] = useDeletePostMutation();
   const [updatePost] = useUpdatePostMutation();
 
-  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const onChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
     setForm({...form, [e.target.name]: e.target.value});
   };
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -40,7 +42,9 @@ const Home = () => {
     }
   };
 
-  const onEditChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const onEditChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
     if (editingPost) {
       setEditingPost({...editingPost, [e.target.name]: e.target.value});
     }
@@ -79,11 +83,10 @@ const Home = () => {
             </label>
             <label className="block">
               <span className="text-gray-700">Content:</span>
-              <input
+              <textarea
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                 onChange={(e) => onChange(e)}
                 value={form.cuisine}
-                type="text"
                 name="cuisine"
               />
             </label>
@@ -94,21 +97,38 @@ const Home = () => {
             </button>{' '}
           </form>
           {editingPost && (
-            <form onSubmit={onEditSubmit}>
-              <input
-                type="text"
-                value={(editingPost as {name: string})?.name}
-                onChange={onEditChange}
-                name="name"
-              />
-              <input
-                type="text"
-                value={(editingPost as {cuisine: string})?.cuisine}
-                onChange={onEditChange}
-                name="cuisine"
-              />
-              <button type="submit">Submit Changes</button>
-            </form>
+            <Modal
+              isOpen={isModalOpen}
+              onRequestClose={() => setIsModalOpen(false)}
+              contentLabel="Edit Post"
+              className="mt-4 flex h-3/4 w-3/4 scale-100 transform items-center justify-center rounded-lg bg-white p-8 shadow-xl transition-transform duration-300"
+              overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+              <form onSubmit={onEditSubmit} className="w-full space-y-4">
+                <input
+                  type="text"
+                  value={editingPost?.name}
+                  onChange={onEditChange}
+                  name="name"
+                  className="block w-full rounded-md border border-gray-300 px-4 py-2"
+                />
+                <textarea
+                  value={editingPost?.cuisine}
+                  onChange={onEditChange}
+                  name="cuisine"
+                  className="block w-full rounded-md border border-gray-300 px-4 py-2"
+                />
+                <button
+                  onChange={() => setIsModalOpen(false)}
+                  className="ml-3 mt-4 w-32 rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                  Save changes
+                </button>
+                <button
+                  type="submit"
+                  className="ml-4 mt-4 w-32 rounded-md border border-transparent bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
+                  Cancel
+                </button>
+              </form>
+            </Modal>
           )}
           {data?.data?.map((restaurant: Props) => (
             <div
@@ -133,7 +153,10 @@ const Home = () => {
                   Delete Post
                 </button>
                 <button
-                  onClick={() => setEditingPost(restaurant as Props)}
+                  onClick={() => {
+                    setEditingPost(restaurant as Props);
+                    setIsModalOpen(true);
+                  }}
                   className="mt-4 w-32 rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
                   Edit Post
                 </button>

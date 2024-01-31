@@ -1,7 +1,7 @@
 import {NextResponse} from 'next/server';
 import {ObjectId} from 'mongodb';
 
-import {connectToDatabase} from '../../../lib/connectToDatabase';
+import {connectToDatabase} from '../../lib/connectToDatabase';
 
 export async function GET() {
   const {mongoClient} = await connectToDatabase();

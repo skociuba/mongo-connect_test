@@ -8,20 +8,20 @@ export const PostsApi = createApi({
   endpoints: (builder) => ({
     getPosts: builder.query({
       query: () => ({
-        url: '/mongo/api',
+        url: '/api',
         method: 'GET',
       }),
     }),
     addPost: builder.mutation({
       query: (obj) => ({
-        url: '/mongo/api',
+        url: '/api',
         method: 'POST',
         body: obj,
       }),
     }),
     deletePost: builder.mutation({
       query: (_id) => ({
-        url: '/mongo/api',
+        url: '/api',
         method: 'DELETE',
         body: {_id},
       }),
@@ -29,7 +29,7 @@ export const PostsApi = createApi({
 
     updatePost: builder.mutation({
       query: (updatedPost) => ({
-        url: '/mongo/api',
+        url: '/api',
         method: 'PUT',
         body: updatedPost,
       }),
