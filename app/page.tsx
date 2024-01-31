@@ -6,6 +6,7 @@ import {
   useGetPostsQuery,
   useAddPostMutation,
   useDeletePostMutation,
+  useUpdatePostMutation,
 } from '../provider/redux/query/Posts';
 
 interface Props {
@@ -17,10 +18,12 @@ interface Props {
 
 const Home = () => {
   const [form, setForm] = useState({name: '', cuisine: '', _key: 'newKey'});
+  const [editingPost, setEditingPost] = useState<Props | null>(null);
 
   const {data, isError, isLoading, refetch} = useGetPostsQuery({});
   const [addPost] = useAddPostMutation();
   const [deletePost] = useDeletePostMutation();
+  const [updatePost] = useUpdatePostMutation();
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({...form, [e.target.name]: e.target.value});
@@ -30,6 +33,24 @@ const Home = () => {
     try {
       const response = await addPost(form);
       setForm({name: '', cuisine: '', _key: 'newKey'});
+      refetch();
+      return response;
+    } catch (error: unknown) {
+      console.log(error);
+    }
+  };
+
+  const onEditChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (editingPost) {
+      setEditingPost({...editingPost, [e.target.name]: e.target.value});
+    }
+  };
+
+  const onEditSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    try {
+      const response = await updatePost(editingPost);
+      setEditingPost(null);
       refetch();
       return response;
     } catch (error: unknown) {
@@ -72,6 +93,23 @@ const Home = () => {
               Add Post
             </button>{' '}
           </form>
+          {editingPost && (
+            <form onSubmit={onEditSubmit}>
+              <input
+                type="text"
+                value={(editingPost as {name: string})?.name}
+                onChange={onEditChange}
+                name="name"
+              />
+              <input
+                type="text"
+                value={(editingPost as {cuisine: string})?.cuisine}
+                onChange={onEditChange}
+                name="cuisine"
+              />
+              <button type="submit">Submit Changes</button>
+            </form>
+          )}
           {data?.data?.map((restaurant: Props) => (
             <div
               key={restaurant._id}
@@ -93,6 +131,11 @@ const Home = () => {
                   }}
                   className="mt-4 w-32 rounded-md border border-transparent bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
                   Delete Post
+                </button>
+                <button
+                  onClick={() => setEditingPost(restaurant as Props)}
+                  className="mt-4 w-32 rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                  Edit Post
                 </button>
               </div>
             </div>

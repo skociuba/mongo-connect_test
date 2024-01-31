@@ -66,24 +66,25 @@ export async function DELETE(request: Request) {
     });
   }
 }
-
 export async function PUT(request: Request) {
   const {mongoClient} = await connectToDatabase();
   const db = mongoClient.db('blog');
   const collection = db.collection('blog');
 
   const updatedPost = await request.json();
+  const {_id, ...updateFields} = updatedPost;
 
   try {
     const result = await collection.updateOne(
-      {_id: updatedPost._id},
-      {$set: updatedPost},
+      {_id: new ObjectId(_id)},
+      {$set: updateFields},
     );
 
     return NextResponse.json({
       result,
     });
   } catch (error) {
+    console.error(error);
     return NextResponse.json({
       success: false,
       message: 'Unable to update post',
