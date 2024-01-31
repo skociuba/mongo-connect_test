@@ -19,7 +19,7 @@ const Nav = () => {
         setTextColor('#000000');
       } else {
         setColor('transparent');
-        setTextColor('#ffffff');
+        setTextColor('#000000');
       }
     };
     window.addEventListener('scroll', changeColor);
